@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tiny — Hodina, ve které se každý žák dostane ke slovu</title>
+<meta name="description" content="Tiny je česká aplikace s chatboty pro učitele. Každý žák vede vlastní rozhovor k vašemu tématu, vy vidíte do všech konverzací a po hodině dostanete shrnutí." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Black & white only — barvy přijdou až při final designu */
+    --bg: #ffffff;
+    --bg-secondary: #F5F5F4;
+    --bg-tertiary: #EBEAE7;
+    --text-primary: #1A1A1A;
+    --text-secondary: #5C5B56;
+    --text-tertiary: #8A8884;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.16);
+    /* "Accent" tokeny mapuji na monochrom — strukturu ponechávám, aby šlo později jen přepsat tyhle proměnné */
+    --accent: #1A1A1A;
+    --accent-dark: #000000;
+    --accent-bg: #EBEAE7;
+    --accent-student: #8A8884;
+    --accent-warn: #8A8884;
+    --warn-bg: #EBEAE7;
+    --warn-text: #5C5B56;
+    --warn-border: #5C5B56;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --max-w: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-weight: 400;
+    color: var(--text-primary);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; }
+
+  /* === HEADER === */
+  .header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .header-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .logo {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .logo-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--text-tertiary);
+    letter-spacing: 0;
+  }
+  .nav { display: flex; gap: 28px; align-items: center; }
+  .nav a {
+    font-size: 14px; color: var(--text-secondary);
+    transition: color 0.15s;
+  }
+  .nav a:hover { color: var(--text-primary); }
+  .nav-cta {
+    background: var(--text-primary);
+    color: var(--bg) !important;
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    font-size: 14px; font-weight: 500;
+  }
+  .nav-cta:hover { background: var(--accent-dark); }
+  .nav-mobile-toggle { display: none; }
+
+  /* === HERO === */
+  .hero {
+    padding: 80px 28px 40px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+  }
+  .hero-inner { max-width: 760px; margin: 0 auto; }
+  .badge {
+    display: inline-block;
+    font-size: 12px; font-weight: 500;
+    color: var(--accent-dark);
+    background: var(--accent-bg);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 28px;
+    letter-spacing: 0.01em;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 5vw, 52px);
+    margin-bottom: 24px;
+    max-width: 640px;
+    margin-left: auto; margin-right: auto;
+  }
+  .hero-sub {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin: 0 auto 36px;
+  }
+  .cta-row {
+    display: flex; justify-content: center; gap: 16px;
+    align-items: center; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 14px 26px;
+    border-radius: var(--radius);
+    font-size: 15px; font-weight: 500;
+    transition: background 0.15s, transform 0.05s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-secondary {
+    color: var(--text-secondary);
+    padding: 14px 18px;
+    font-size: 15px; font-weight: 500;
+    border-radius: var(--radius);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-secondary:hover { color: var(--text-primary); }
+  .cta-meta {
+    font-size: 13px; color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  /* === HERO VISUAL (placeholder mockup) === */
+  .hero-visual-wrap {
+    max-width: 980px;
+    margin: 56px auto 0;
+    padding: 0 28px;
+  }
+  .hero-visual {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 20px 40px -12px rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .hero-visual-placeholder-tag {
+    position: absolute;
+    top: -10px; right: 16px;
+    background: var(--warn-bg);
+    color: var(--warn-text);
+    font-size: 10px; font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .dash-mock {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+  }
+  .dash-mock-col h4 {
+    font-size: 11px; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 10px; font-weight: 500;
+  }
+  .dash-list { display: flex; flex-direction: column; gap: 4px; }
+  .dash-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px;
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .dash-row.active {
+    border: 1px solid var(--accent);
+    background: var(--accent-bg);
+  }
+  .dash-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+  .dash-dot.green { background: var(--accent); }
+  .dash-dot.amber { background: var(--accent-warn); }
+  .dash-dot.idle { background: var(--border-strong); }
+  .dash-name { color: var(--text-primary); font-weight: 500; flex: 0 0 auto; }
+  .dash-snippet {
+    color: var(--text-tertiary);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1;
+  }
+  .dash-chat {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 8px 4px;
+  }
+  .dash-msg {
+    max-width: 85%;
+    padding: 9px 13px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .dash-msg.student {
+    align-self: flex-start;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    color: var(--text-primary);
+  }
+  .dash-msg.bot {
+    align-self: flex-end;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+  }
+  .dash-note {
+    background: var(--warn-bg);
+    border-left: 2px solid var(--warn-border);
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--warn-text);
+    border-radius: 0 6px 6px 0;
+    align-self: flex-start;
+    max-width: 85%;
+    margin-top: 2px;
+  }
+  .dash-note strong { color: #5b3406; font-weight: 600; }
+
+  /* === SECTION === */
+  section { padding: 80px 28px; }
+  .section-inner { max-width: var(--max-w); margin: 0 auto; }
+  .section-head {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .eyebrow {
+    font-size: 12px; color: var(--accent-dark);
+    background: var(--accent-bg);
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .section-head h2 {
+    font-size: clamp(28px, 3.5vw, 38px);
+    max-width: 640px;
+    margin: 0 auto 16px;
+  }
+  .section-head p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+  .alt-bg { background: var(--bg-secondary); }
+  .dark-bg {
+    background: #161614;
+    color: #F0EFEA;
+  }
+  .dark-bg .section-head h2 { color: #FAFAF7; }
+  .dark-bg .section-head p { color: #B5B3AC; }
+
+  /* === Problem hook === */
+  .problem {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .problem h2 {
+    font-size: clamp(26px, 3vw, 34px);
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+  .problem p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 18px;
+  }
+  .problem strong { color: var(--text-primary); font-weight: 600; }
+  .pull-quote {
+    margin: 48px auto 0;
+    max-width: 580px;
+    text-align: left;
+    border-left: 3px solid var(--accent);
+    padding: 14px 22px;
+    background: var(--bg);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .pull-quote blockquote {
+    font-family: 'Iowan Old Style', 'Palatino', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+  }
+  .pull-quote cite {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  /* === Steps (4) === */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .step {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    position: relative;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .step:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .step h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .step p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* === What teacher gets (features) === */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .feature {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    border: 0.5px solid var(--border);
+  }
+  .feature-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: var(--accent-dark);
+  }
+  .feature h3 {
+    font-size: 19px;
+    margin-bottom: 10px;
+  }
+  .feature p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* === Chatbot catalog === */
+  .catalog { max-width: 1000px; margin: 0 auto; }
+  .bloom-tier {
+    margin-bottom: 56px;
+  }
+  .bloom-tier:last-child { margin-bottom: 0; }
+  .tier-head {
+    display: flex; align-items: baseline;
+    gap: 16px; margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .tier-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+  .tier-name {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--accent-dark);
+  }
+  .tier-tagline {
+    font-size: 17px;
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+  }
+  .tier-bots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .bot {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    border: 0.5px solid var(--border);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .bot:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .bot-name {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+  .bot-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .bot-use {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+  .bot-use strong {
+    font-style: normal;
+    color: var(--accent-dark);
+    font-weight: 500;
+  }
+  .single-bot { grid-template-columns: 1fr; max-width: 480px; }
+
+  /* === Pro koho === */
+  .audience {
+    max-width: 760px; margin: 0 auto;
+  }
+  .audience-list {
+    display: flex; flex-direction: column;
+    gap: 14px;
+    list-style: none;
+    padding: 0; margin: 0;
+  }
+  .audience-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 22px;
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.55;
+    border: 0.5px solid var(--border);
+  }
+  .audience-list li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 16px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+  .audience-list li strong { font-weight: 600; }
+  .audience-list li span { color: var(--text-secondary); }
+
+  /* === Testimonialy === */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 940px;
+    margin: 0 auto;
+  }
+  .testimonial {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    border: 0.5px solid var(--border);
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+  }
+  .testimonial blockquote {
+    font-family: 'Iowan Old Style', 'Palatino', Georgia, serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0 0 18px;
+  }
+  .testimonial cite {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+    display: block;
+  }
+  .testimonial cite strong {
+    color: var(--text-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .testimonial-quote-mark {
+    font-family: 'Iowan Old Style', Georgia, serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--accent);
+    height: 28px;
+    margin-bottom: 8px;
+  }
+
+  /* === Trust block === */
+  .trust {
+    text-align: center;
+  }
+  .trust-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    flex-wrap: wrap;
+    margin-top: 36px;
+  }
+  .trust-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .trust-logo-box {
+    width: 120px;
+    height: 60px;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px dashed rgba(240,239,234,0.2);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(240,239,234,0.5);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .trust-logo-label {
+    font-size: 12px;
+    color: rgba(240,239,234,0.6);
+    letter-spacing: 0.04em;
+  }
+
+  /* === FAQ === */
+  .faq {
+    max-width: 720px; margin: 0 auto;
+  }
+  .faq-item {
+    border-bottom: 0.5px solid var(--border);
+  }
+  .faq-q {
+    padding: 22px 8px;
+    cursor: pointer;
+    display: flex; justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+    user-select: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .faq-q:hover { color: var(--accent-dark); }
+  .faq-q-icon {
+    flex: 0 0 auto;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+    margin-top: 2px;
+  }
+  .faq-item.open .faq-q-icon {
+    transform: rotate(45deg);
+  }
+  .faq-a {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .faq-a-inner { padding: 0 8px 24px; }
+  .faq-item.open .faq-a {
+    max-height: 500px;
+  }
+  .faq-a strong { color: var(--text-primary); font-weight: 500; }
+  .placeholder-inline {
+    background: var(--warn-bg);
+    color: var(--warn-text);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  /* === Final CTA === */
+  .final-cta {
+    text-align: center;
+    background: var(--bg-secondary);
+  }
+  .final-cta h2 {
+    font-size: clamp(28px, 3.5vw, 40px);
+    max-width: 600px;
+    margin: 0 auto 18px;
+  }
+  .final-cta p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 32px;
+    line-height: 1.55;
+  }
+
+  /* === Footer === */
+  footer {
+    background: #161614;
+    color: #B5B3AC;
+    padding: 64px 28px 36px;
+  }
+  .footer-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 48px;
+  }
+  .footer-brand .logo { color: #FAFAF7; margin-bottom: 14px; }
+  .footer-brand .logo-sub { color: rgba(240,239,234,0.5); }
+  .footer-tagline {
+    font-size: 14px;
+    color: rgba(240,239,234,0.6);
+    line-height: 1.55;
+    max-width: 320px;
+  }
+  .footer-col h4 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(240,239,234,0.55);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 14px;
+    color: rgba(240,239,234,0.85);
+    padding: 5px 0;
+    transition: color 0.15s;
+  }
+  .footer-col a:hover { color: #FAFAF7; }
+  .footer-bottom {
+    border-top: 0.5px solid rgba(240,239,234,0.1);
+    padding-top: 28px;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 13px;
+    color: rgba(240,239,234,0.5);
+  }
+
+  /* === Responsive === */
+  @media (max-width: 880px) {
+    section { padding: 60px 24px; }
+    .hero { padding: 56px 24px 28px; }
+    .nav { display: none; }
+    .nav-mobile-toggle {
+      display: inline-flex;
+      background: var(--text-primary);
+      color: var(--bg);
+      padding: 9px 16px;
+      border-radius: var(--radius);
+      font-size: 14px; font-weight: 500;
+    }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .features { grid-template-columns: 1fr; }
+    .tier-bots { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .dash-mock { grid-template-columns: 1fr; }
+    .tier-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+  @media (max-width: 540px) {
+    section { padding: 48px 20px; }
+    .hero { padding: 40px 20px 24px; }
+    .header-inner { padding: 12px 20px; }
+    .steps { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+    .testimonial blockquote { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <div class="header-inner">
+    <a href="#top" class="logo">
+      Tiny<span class="logo-sub">/ chatboti</span>
+    </a>
+    <nav class="nav">
+      <a href="#jak-to-funguje">Jak to funguje</a>
+      <a href="#chatboti">Chatboti</a>
+      <a href="#pro-ucitele">Pro učitele</a>
+      <a href="#faq">FAQ</a>
+      <a href="#registrace" class="nav-cta">Registrovat se zdarma</a>
+    </nav>
+    <a href="#registrace" class="nav-mobile-toggle">Registrovat</a>
+  </div>
+</header>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="top" style="padding-bottom: 0;">
+  <div class="hero-inner">
+    <div class="badge">Nová aplikace pro učitele s chatboty do výuky</div>
+    <h1>Hodina, ve které se každý žák dostane ke slovu.</h1>
+    <p class="hero-sub">
+      Tiny je česká aplikace, ve které si každý žák povídá s chatbotem k vašemu tématu. Chatboti připravení pedagogy vedou žáky otázkami — ne hotovými odpověďmi. Vy vidíte všechny konverzace a po hodině dostanete shrnutí, kdo čemu rozuměl.
+    </p>
+    <div class="cta-row">
+      <a href="#registrace" class="btn-primary">Registrovat se zdarma →</a>
+      <a href="#jak-to-funguje" class="btn-secondary">Jak to funguje</a>
+    </div>
+    <div class="cta-meta">Zdarma pro učitele i žáky · Registrace přes Google, Microsoft nebo e-mail</div>
+  </div>
+</section>
+
+<!-- ========== HERO VISUAL (placeholder mockup) ========== -->
+<div class="hero-visual-wrap" style="background: var(--bg-secondary); padding-top: 0; padding-bottom: 56px;">
+  <div class="hero-visual">
+    <div class="hero-visual-placeholder-tag">Placeholder · screenshot doplníme</div>
+    <div class="dash-mock">
+      <div class="dash-mock-col">
+        <h4>6.B · Procvičování · 18 žáků</h4>
+        <div class="dash-list">
+          <div class="dash-row"><span class="dash-dot green"></span><span class="dash-name">Adam K.</span><span class="dash-snippet">…tomu rozumím</span></div>
+          <div class="dash-row"><span class="dash-dot green"></span><span class="dash-name">Bára N.</span><span class="dash-snippet">teď mi to dává smysl</span></div>
+          <div class="dash-row active"><span class="dash-dot amber"></span><span class="dash-name">Eliška P.</span><span class="dash-snippet">a co když je to jinak?</span></div>
+          <div class="dash-row"><span class="dash-dot green"></span><span class="dash-name">Filip H.</span><span class="dash-snippet">aha, díky</span></div>
+          <div class="dash-row"><span class="dash-dot idle"></span><span class="dash-name">Hana M.</span><span class="dash-snippet">přemýšlí…</span></div>
+          <div class="dash-row"><span class="dash-dot green"></span><span class="dash-name">Jakub V.</span><span class="dash-snippet">hotovo, šlo to</span></div>
+          <div class="dash-row"><span class="dash-dot amber"></span><span class="dash-name">Klára S.</span><span class="dash-snippet">nevím no…</span></div>
+        </div>
+      </div>
+      <div class="dash-mock-col">
+        <h4>Eliška P. · konverzace</h4>
+        <div class="dash-chat">
+          <div class="dash-msg student">Vysvětli mi, proč v Past Simple s "did" pak slovesa nemají koncovku -ed.</div>
+          <div class="dash-msg bot">Skvělá otázka! Pomocné sloveso „did" už nese informaci o minulém čase, takže ji hlavní sloveso nepotřebuje opakovat. Zkusíme příklad: „I went" vs. „Did you go?" — vidíš ten rozdíl?</div>
+          <div class="dash-msg student">Jo, ale co když řeknu "Did you went"?</div>
+          <div class="dash-msg bot">Pak je tam minulý čas vyjádřený dvakrát — to už je moc. Mohla bys to zkusit přepsat správně?</div>
+          <div class="dash-note"><strong>Tiny upozornil:</strong> Eliška opakovaně chybuje v tvorbě otázky v minulém čase. Doporučení: vrátit se k tomu na začátku příští hodiny.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PROBLEM HOOK ========== -->
+<section class="alt-bg">
+  <div class="section-inner problem">
+    <h2>Chatboti do hodiny, kteří učí žáky přemýšlet.</h2>
+    <p>
+      Tiny je vzdělávací aplikace s 11 chatboty pro vaše hodiny. Každý žák vede s chatbotem vlastní rozhovor k vašemu tématu. Místo hotových odpovědí mu chatbot klade otázky a posouvá ho v přemýšlení dál.
+    </p>
+    <p>
+      Vy do všech konverzací průběžně vidíte. Můžete si je projít, napsat žákovi poznámku, a po skončení hodiny od Tiny dostanete shrnutí třídy — kdo látku pochopil, kde kdo bloudil a co si zkusit příště jinak.
+    </p>
+    <div class="pull-quote">
+      <blockquote>„V klasickém chatu si budou hrát. Tady mám kontrolu. Je to cílené. Nenechá je to odbočovat."</blockquote>
+      <cite>Lucie H. · pilotní učitelka</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ========== JAK TO FUNGUJE ========== -->
+<section id="jak-to-funguje">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Jak to funguje</span>
+      <h2>Příprava hodiny zabere pár minut</h2>
+      <p>Čtyři kroky od registrace ke spuštěné hodině s chatbotem.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Vyberete chatbota</h3>
+        <p>Z 11 typů chatbotů vyberete toho, který odpovídá cíli hodiny — opakování, diskuse, brainstorming nebo třeba role historické postavy.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Zadáte téma</h3>
+        <p>Jednou větou — třeba „Procvičování přítomného času s šestou třídou." O pedagogickou stránku rozhovoru se postará Tiny.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Žáci se připojí přes PIN</h3>
+        <p>Žáci se zaregistrují přes Google, Microsoft nebo e-mail. Pak zadají čtyřmístný kód, který jim dáte, a jsou v hodině. Žádná instalace, vše běží v prohlížeči.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Sledujete a dostanete shrnutí</h3>
+        <p>Během hodiny vidíte všechny konverzace. Po skončení vám Tiny pošle shrnutí třídy — kdo látku zvládl a kde se kdo zasekl.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CO DOSTANE UČITEL ========== -->
+<section id="pro-ucitele" class="alt-bg">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Co dostane učitel</span>
+      <h2>Hodina, ve které máte přehled</h2>
+      <p>Náhled do konverzací každého žáka, průběžné dění v hodině a shrnutí po jejím skončení.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+        </div>
+        <h3>Přehled konverzací v reálném čase</h3>
+        <p>Otevřete chat libovolného žáka a vidíte, na co se ptal, jak chatbot odpovídal a kde se zasekl. Můžete do konverzace vstoupit a napsat poznámku, která se zobrazí jen jemu.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <h3>Shrnutí hodiny od Tiny</h3>
+        <p>Po skončení hodiny vám Tiny shrne, jak to ve třídě dopadlo — kdo látku pochopil, kdo se zasekl, kde se nejčastěji chybovalo a co si zkusit příště jinak.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        </div>
+        <h3>Chatboti, kteří se drží tématu</h3>
+        <p>Tiny chatboti zůstávají u tématu, které pro hodinu zadáte. Pokud se konverzace začne stáčet jinam, chatbot ji vrací zpátky k učivu.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <h3>Upozornění na nevhodný obsah</h3>
+        <p>Pokud konverzace sklouzne někam, kam nemá, dostanete upozornění ještě v hodině. Stihnete to řešit hned — ne až zpětně z pracovního listu.</p>
+      </div>
+    </div>
+    <div class="pull-quote" style="margin-top: 56px;">
+      <blockquote>„Stane se ze mě 17 učitelů, kteří budou žákům odpovídat. Ze mě se stane 17 variant pro ty děti."</blockquote>
+      <cite>Lenka H. · ZŠ Kozojedy</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ========== KATALOG CHATBOTŮ ========== -->
+<section id="chatboti">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Katalog chatbotů</span>
+      <h2>11 chatbotů. Pro každou fázi učení.</h2>
+      <p>Uspořádáno podle Bloomovy taxonomie. Vyberete si, co s žáky chcete dělat — Tiny dodá parťáka, který to umí. Stejný chatbot funguje napříč předměty.</p>
+    </div>
+
+    <div class="catalog">
+
+      <!-- Zapamatování -->
+      <div class="bloom-tier">
+        <div class="tier-head">
+          <span class="tier-icon">🧠</span>
+          <span class="tier-name">Zapamatování</span>
+          <span class="tier-tagline">Když potřebujete, aby si žáci látku upevnili</span>
+        </div>
+        <div class="tier-bots">
+          <div class="bot">
+            <div class="bot-name">Opakovací parťák</div>
+            <div class="bot-desc">Provází žáka opakováním látky. Rozkládá celek na menší kroky, doptává se, vrací se k chybám. Trpělivý průvodce, který se přizpůsobí tempu žáka.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> opakování slovíček, vzorců, pojmů, dat.</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">Testovací chatbot</div>
+            <div class="bot-desc">Generuje a vyhodnocuje úlohy v různých formátech — výběr z možností, krátká odpověď, doplňování, řazení, přiřazování. Na konci dá žákovi shrnutí výkonu.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> rychlé ověření znalostí na začátku nebo konci hodiny.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Porozumění -->
+      <div class="bloom-tier">
+        <div class="tier-head">
+          <span class="tier-icon">💡</span>
+          <span class="tier-name">Porozumění</span>
+          <span class="tier-tagline">Když chcete, aby žáci látce skutečně rozuměli</span>
+        </div>
+        <div class="tier-bots">
+          <div class="bot">
+            <div class="bot-name">Společné objevování</div>
+            <div class="bot-desc">Vede žáka učením skrze otázky. Místo výkladu se ptá, ověřuje porozumění, doptává se na souvislosti. Ideální na samostudium nebo pro nadané žáky.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> hloubavou práci s textem, samostatné objevování tématu.</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">Zvědavý mimoň</div>
+            <div class="bot-desc">Předstírá, že tématu nerozumí, a nechá si ho od žáka vysvětlit. Doptává se na pojmy, vztahy, příčiny. Když žák něco neumí vysvětlit, hned to vidíte.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> ověření, že žáci látku skutečně chápou — ne jen poznávají.</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">Historická postava</div>
+            <div class="bot-desc">Chatbot se vtělí do historické postavy a odpovídá z její perspektivy. Žáci s ní vedou rozhovor a skrze něj poznávají dobu, motivace a souvislosti.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> dějepis, literaturu, ZSV (Karel IV., Komenský, Marie Curie, Darwin).</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">V hlavní roli…</div>
+            <div class="bot-desc">Chatbot se vtělí do čehokoli — buňky, sodíku, duhy, květiny — a odpovídá v první osobě. Žáci se učí klást přesné otázky a skrze dialog poznávat vlastnosti zkoumaného jevu.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> přírodovědu, biologii, chemii, fyziku.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aplikace -->
+      <div class="bloom-tier">
+        <div class="tier-head">
+          <span class="tier-icon">🛠</span>
+          <span class="tier-name">Aplikace</span>
+          <span class="tier-tagline">Když chcete, aby žáci uměli látku přenést</span>
+        </div>
+        <div class="tier-bots single-bot">
+          <div class="bot">
+            <div class="bot-name">Co kdyby…</div>
+            <div class="bot-desc">Nabídne hypotetickou situaci („Co by se stalo, kdyby Slunce zhaslo?", „Co kdyby v Evropě nikdy nebyla průmyslová revoluce?") a vede žáka k promyšlení důsledků.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> rozvíjení kauzálního myšlení, aplikace znalostí na nové situace.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analýza a hodnocení -->
+      <div class="bloom-tier">
+        <div class="tier-head">
+          <span class="tier-icon">⚖️</span>
+          <span class="tier-name">Analýza a hodnocení</span>
+          <span class="tier-tagline">Když chcete trénovat kritické myšlení</span>
+        </div>
+        <div class="tier-bots">
+          <div class="bot">
+            <div class="bot-name">Argumentační partner</div>
+            <div class="bot-desc">Vede s žákem diskusi z opačné pozice. Odhaluje slabá místa argumentace, upozorňuje na argumentační klamy, nutí žáka obhajovat tvrzení důkazy.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> ZSV, debaty, mediální výchovu, filozofii.</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">Chybující chatbot</div>
+            <div class="bot-desc">Záměrně předkládá nesprávné informace a vyzývá žáka, aby je vyvrátil nebo ověřil. Skvělý trénink kritického myšlení a práce se zdroji.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> mediální výchovu, ověřování faktů, jakýkoli předmět, kde chcete trénovat zdravou skepsi.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tvorba -->
+      <div class="bloom-tier">
+        <div class="tier-head">
+          <span class="tier-icon">✨</span>
+          <span class="tier-name">Tvorba</span>
+          <span class="tier-tagline">Když chcete, aby žáci něco vymýšleli</span>
+        </div>
+        <div class="tier-bots">
+          <div class="bot">
+            <div class="bot-name">Parťák pro brainstorming</div>
+            <div class="bot-desc">Pomáhá žákovi rozbíhat myšlení, generovat varianty a úhly pohledu, a pak z nich vybírat. Nehledá správnou odpověď — hledá co nejvíc nápadů.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> projektové dny, slohové práce, návrhy experimentů, kreativní zadání.</div>
+          </div>
+          <div class="bot">
+            <div class="bot-name">Chatbot pro plánování</div>
+            <div class="bot-desc">Pomáhá žákovi (nebo týmu) rozvrhnout práci na konkrétní kroky — odhadnout čas, určit priority, rozpoznat rizika, rozdělit role.</div>
+            <div class="bot-use"><strong>Vhodné na:</strong> skupinové projekty, ročníkové práce, dlouhodobá zadání.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRO KOHO JE TINY ========== -->
+<section class="alt-bg">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Pro koho</span>
+      <h2>Pro učitele, kteří chtějí AI v hodině využít, ale nechtějí ztratit kontrolu</h2>
+    </div>
+    <div class="audience">
+      <ul class="audience-list">
+        <li><span><strong>Učitelé ZŠ a SŠ napříč předměty</strong> — jazyky, přírodověda, dějepis, ZSV, čeština, matematika, informatika, odborné předměty.</span></li>
+        <li><span><strong>Učitelé, kteří už s žáky AI zkoušeli</strong>, ale narážejí na to, že nevidí, jak s ní pracují, a nemají kontrolu nad obsahem.</span></li>
+        <li><span><strong>Učitelé, kteří chtějí věnovat pozornost každému žákovi</strong> — i ve třídě, kde fyzicky nestihnou sedět s každým zvlášť.</span></li>
+        <li><span><strong>ICT koordinátoři a školy</strong>, které hledají jeden bezpečný AI nástroj pro celou sborovnu — s přehledem o tom, jak ho učitelé a žáci používají.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALY ========== -->
+<section>
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Co říkají učitelé z pilotu</span>
+      <h2>Tiny už používají na desítkách škol</h2>
+      <p>Tiny pilotně používají učitelé jazyků, přírodovědy, dějepisu i odborných předmětů — na základních i středních školách.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div>
+          <div class="testimonial-quote-mark">"</div>
+          <blockquote>Studenti si to moc pochvalují, že jim to pomůže k lepšímu pochopení daného tématu. Pro ně to bylo motivační — mohli si odpovědět na věci, které jim nebyly jasné.</blockquote>
+        </div>
+        <cite><strong>Miroslav Č.</strong>učitel odborných stavebních předmětů, SŠ stavební</cite>
+      </div>
+      <div class="testimonial">
+        <div>
+          <div class="testimonial-quote-mark">"</div>
+          <blockquote>Hodně cenné je pro mě, že můžu vidět záznam komunikace žáků s AI. Bylo na nich vidět, že informacím, které si od chatbota odnesli, opravdu rozumí.</blockquote>
+        </div>
+        <cite><strong>Radka S.</strong>ZŠ Lupáčova, Praha</cite>
+      </div>
+      <div class="testimonial">
+        <div>
+          <div class="testimonial-quote-mark">"</div>
+          <blockquote>Aktivita se šesťáky povedla. Děti říkaly, že jim chatbot opravdu vypsal věty, ve kterých chybovaly. Vyhodnocení odpovídá chybovosti typické pro tuto látku.</blockquote>
+        </div>
+        <cite><strong>Dana K.</strong>ZŠ jazyků Karlovy Vary</cite>
+      </div>
+      <div class="testimonial">
+        <div>
+          <div class="testimonial-quote-mark">"</div>
+          <blockquote>Hodnocení hodiny — je to pro studenty jiný názor než můj. Koukali jsme na to společně a řekli si, jestli to je podle nich relevantní. Přidaná hodnota je, že vidím přímo konverzaci studentů.</blockquote>
+        </div>
+        <cite><strong>Miroslav Č.</strong>SŠ stavební</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TRUST BLOCK ========== -->
+<section class="dark-bg">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow" style="background: rgba(255,255,255,0.08); color: rgba(240,239,234,0.85);">Kdo za Tiny stojí</span>
+      <h2>Za Tiny stojí AI dětem a Google.org</h2>
+      <p>Tiny vyvíjí česká nezisková organizace AI dětem ve spolupráci s mezinárodním týmem metodiků, vývojářů a akademiků. Aplikace vzniká na základě výzkumu, pilotního ověřování ve školách a testování s učiteli přímo v hodinách.</p>
+    </div>
+    <div class="trust trust-logos">
+      <div class="trust-logo">
+        <div class="trust-logo-box">AI dětem</div>
+        <div class="trust-logo-label">Provozovatel</div>
+      </div>
+      <div class="trust-logo">
+        <div class="trust-logo-box">Google.org</div>
+        <div class="trust-logo-label">Podpořeno</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section id="faq" class="alt-bg">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Časté otázky</span>
+      <h2>Na co se učitelé nejčastěji ptají</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Musím umět promptovat?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Ne. Chatboti jsou připravení pedagogy — stačí, když zadáte téma a kontext hodiny. Pokud chcete, prompt si můžete sami upravit. Pokud ne, použijete ten, co máme připravený.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Kolik to stojí?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Tiny je zdarma pro učitele i žáky. Aplikaci vyvíjí nezisková organizace AI dětem za podpory Google.org.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Potřebují žáci vlastní účet?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Ano. Žáci se zaregistrují stejně jednoduše jako učitelé — přes Google, Microsoft nebo e-mail. Do konkrétní hodiny se pak přihlásí čtyřmístným PIN, který jim dáte.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Jak je to s bezpečností a soukromím dat žáků?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><span class="placeholder-inline">[Placeholder — doplnit konkrétní informace o tom, kde běží data, GDPR, ukládání konverzací, věkový limit. Učitelé se na tohle v rozhovorech přímo ptali.]</span></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Jaký AI model Tiny používá?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><span class="placeholder-inline">[Placeholder — doplnit, jaký model AI je pod Tiny a jak to je s halucinacemi.]</span></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Funguje to pro můj předmět?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Pravděpodobně ano. Chatboti jsou navržení univerzálně — fungují v matematice, dějepisu, biologii i angličtině. Konkrétní téma a kontext hodiny zadáváte vy. Pilotní učitelé Tiny používali na ZŠ i SŠ, v jazycích, přírodovědě, dějepisu i odborných předmětech (např. stavebnictví).</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Co když chatbot v hodině řekne nesmysl?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Chatboti jsou nastaveni tak, aby zůstali u své pedagogické role a nevedli žáka mimo téma. Tiny není náhrada učitele, ale parťák — proto doporučujeme s výstupy žáků dál pracovat. Po hodině máte přístup ke všem konverzacím, takže případné nesmysly poznáte a můžete na nich postavit další hodinu.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Co potřebuju za vybavení?<span class="faq-q-icon">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">Notebook, tablet nebo mobil s prohlížečem a wifi. Žádná instalace, žádné speciální požadavky.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FINAL CTA ========== -->
+<section class="final-cta" id="registrace">
+  <div class="section-inner">
+    <h2>Tiny si můžete zkusit ve své příští hodině</h2>
+    <p>Stačí pár minut na přípravu — vyberete chatbota, doplníte téma a žáci se připojí přes PIN.</p>
+    <a href="#" class="btn-primary">Registrovat se zdarma →</a>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Tiny<span class="logo-sub">/ chatboti</span></div>
+        <p class="footer-tagline">Vzdělávací aplikace s chatboty pro učitele. Vyvíjí česká nezisková organizace AI dětem za podpory Google.org.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Produkt</h4>
+        <a href="#chatboti">Chatboti</a>
+        <a href="#jak-to-funguje">Jak to funguje</a>
+        <a href="#pro-ucitele">Pro učitele</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>O nás</h4>
+        <a href="https://aidetem.cz" target="_blank" rel="noopener">AI dětem</a>
+        <a href="https://tiny.school" target="_blank" rel="noopener">Tiny.school</a>
+        <a href="#">Kontakt</a>
+      </div>
+      <div class="footer-col">
+        <h4>Právní</h4>
+        <a href="#">Ochrana soukromí</a>
+        <a href="#">Podmínky použití</a>
+        <a href="#">GDPR</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 AI dětem</div>
+      <div>tiny.school/chatboti</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    const isOpen = item.classList.contains('open');
+    // Close all others (accordion behavior — comment out for multi-open)
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+</script>
+
+</body>
+</html>
