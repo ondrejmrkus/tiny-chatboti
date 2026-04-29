@@ -165,11 +165,12 @@
 
   /* === HERO VISUAL (placeholder mockup) === */
   .hero-visual-wrap {
-    max-width: 980px;
-    margin: 56px auto 0;
-    padding: 0 28px;
+    background: var(--bg-secondary);
+    padding: 48px 28px 0;
   }
   .hero-visual {
+    max-width: 980px;
+    margin: 0 auto;
     background: var(--bg);
     border: 0.5px solid var(--border);
     border-radius: var(--radius-xl);
@@ -474,6 +475,26 @@
     color: var(--accent-dark);
     font-weight: 500;
   }
+  .bot-try {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .bot-try:hover {
+    background: var(--text-primary);
+    color: var(--bg);
+    border-color: var(--text-primary);
+  }
   .single-bot { grid-template-columns: 1fr; max-width: 480px; }
 
   /* === Pro koho === */
@@ -767,12 +788,12 @@
 </header>
 
 <!-- ========== HERO ========== -->
-<section class="hero" id="top" style="padding-bottom: 0;">
+<section class="hero" id="top" style="padding-bottom: 56px;">
   <div class="hero-inner">
     <div class="badge">Nová aplikace pro učitele s chatboty do výuky</div>
     <h1>Hodina, ve které se každý žák dostane ke slovu.</h1>
     <p class="hero-sub">
-      Tiny je česká aplikace, ve které si každý žák povídá s chatbotem k vašemu tématu. Chatboti připravení pedagogy vedou žáky otázkami — ne hotovými odpověďmi. Vy vidíte všechny konverzace a po hodině dostanete shrnutí, kdo čemu rozuměl.
+      Tiny je česká aplikace, ve které si každý žák povídá s chatbotem k vašemu tématu. Chatboti připravení pedagogy vedou žáky otázkami — ne hotovými odpověďmi. Vy vidíte všechny konverzace a po hodině dostanete shrnutí toho, jak hodina probíhala.
     </p>
     <div class="cta-row">
       <a href="#registrace" class="btn-primary">Registrovat se zdarma →</a>
@@ -783,7 +804,7 @@
 </section>
 
 <!-- ========== HERO VISUAL (placeholder mockup) ========== -->
-<div class="hero-visual-wrap" style="background: var(--bg-secondary); padding-top: 0; padding-bottom: 56px;">
+<div class="hero-visual-wrap">
   <div class="hero-visual">
     <div class="hero-visual-placeholder-tag">Placeholder · screenshot doplníme</div>
     <div class="dash-mock">
@@ -821,7 +842,7 @@
       Tiny je vzdělávací aplikace s 11 chatboty pro vaše hodiny. Každý žák vede s chatbotem vlastní rozhovor k vašemu tématu. Místo hotových odpovědí mu chatbot klade otázky a posouvá ho v přemýšlení dál.
     </p>
     <p>
-      Vy do všech konverzací průběžně vidíte. Můžete si je projít, napsat žákovi poznámku, a po skončení hodiny od Tiny dostanete shrnutí třídy — kdo látku pochopil, kde kdo bloudil a co si zkusit příště jinak.
+      Vy do všech konverzací průběžně vidíte a můžete si je kdykoli projít. Po skončení hodiny od Tiny dostanete celkové shrnutí — co se probíralo, kde se žáci nejčastěji zasekli a co příště zkusit jinak.
     </p>
     <div class="pull-quote">
       <blockquote>„V klasickém chatu si budou hrát. Tady mám kontrolu. Je to cílené. Nenechá je to odbočovat."</blockquote>
@@ -857,7 +878,7 @@
       <div class="step">
         <div class="step-num">4</div>
         <h3>Sledujete a dostanete shrnutí</h3>
-        <p>Během hodiny vidíte všechny konverzace. Po skončení vám Tiny pošle shrnutí třídy — kdo látku zvládl a kde se kdo zasekl.</p>
+        <p>Během hodiny vidíte všechny konverzace. Po skončení vám Tiny pošle shrnutí — co se probíralo, kde se žáci nejčastěji zasekli a co příště zkusit jinak.</p>
       </div>
     </div>
   </div>
@@ -877,14 +898,14 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
         </div>
         <h3>Přehled konverzací v reálném čase</h3>
-        <p>Otevřete chat libovolného žáka a vidíte, na co se ptal, jak chatbot odpovídal a kde se zasekl. Můžete do konverzace vstoupit a napsat poznámku, která se zobrazí jen jemu.</p>
+        <p>Otevřete chat libovolného žáka a vidíte celý jeho rozhovor — na co se ptal, jak chatbot odpovídal a kde se případně zasekl.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
         </div>
         <h3>Shrnutí hodiny od Tiny</h3>
-        <p>Po skončení hodiny vám Tiny shrne, jak to ve třídě dopadlo — kdo látku pochopil, kdo se zasekl, kde se nejčastěji chybovalo a co si zkusit příště jinak.</p>
+        <p>Po skončení hodiny vám Tiny dá celkové shrnutí — jaká témata se v hodině probírala, kde se žáci nejčastěji zasekli a co příště zkusit jinak.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">
@@ -898,7 +919,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
         </div>
         <h3>Upozornění na nevhodný obsah</h3>
-        <p>Pokud konverzace sklouzne někam, kam nemá, dostanete upozornění ještě v hodině. Stihnete to řešit hned — ne až zpětně z pracovního listu.</p>
+        <p>Pokud konverzace sklouzne někam, kam nemá, dostanete upozornění ještě během hodiny. Můžete reagovat ihned.</p>
       </div>
     </div>
     <div class="pull-quote" style="margin-top: 56px;">
@@ -931,11 +952,13 @@
             <div class="bot-name">Opakovací parťák</div>
             <div class="bot-desc">Provází žáka opakováním látky. Rozkládá celek na menší kroky, doptává se, vrací se k chybám. Trpělivý průvodce, který se přizpůsobí tempu žáka.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> opakování slovíček, vzorců, pojmů, dat.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">Testovací chatbot</div>
             <div class="bot-desc">Generuje a vyhodnocuje úlohy v různých formátech — výběr z možností, krátká odpověď, doplňování, řazení, přiřazování. Na konci dá žákovi shrnutí výkonu.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> rychlé ověření znalostí na začátku nebo konci hodiny.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
         </div>
       </div>
@@ -952,21 +975,25 @@
             <div class="bot-name">Společné objevování</div>
             <div class="bot-desc">Vede žáka učením skrze otázky. Místo výkladu se ptá, ověřuje porozumění, doptává se na souvislosti. Ideální na samostudium nebo pro nadané žáky.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> hloubavou práci s textem, samostatné objevování tématu.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">Zvědavý mimoň</div>
             <div class="bot-desc">Předstírá, že tématu nerozumí, a nechá si ho od žáka vysvětlit. Doptává se na pojmy, vztahy, příčiny. Když žák něco neumí vysvětlit, hned to vidíte.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> ověření, že žáci látku skutečně chápou — ne jen poznávají.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">Historická postava</div>
             <div class="bot-desc">Chatbot se vtělí do historické postavy a odpovídá z její perspektivy. Žáci s ní vedou rozhovor a skrze něj poznávají dobu, motivace a souvislosti.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> dějepis, literaturu, ZSV (Karel IV., Komenský, Marie Curie, Darwin).</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">V hlavní roli…</div>
             <div class="bot-desc">Chatbot se vtělí do čehokoli — buňky, sodíku, duhy, květiny — a odpovídá v první osobě. Žáci se učí klást přesné otázky a skrze dialog poznávat vlastnosti zkoumaného jevu.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> přírodovědu, biologii, chemii, fyziku.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
         </div>
       </div>
@@ -983,6 +1010,7 @@
             <div class="bot-name">Co kdyby…</div>
             <div class="bot-desc">Nabídne hypotetickou situaci („Co by se stalo, kdyby Slunce zhaslo?", „Co kdyby v Evropě nikdy nebyla průmyslová revoluce?") a vede žáka k promyšlení důsledků.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> rozvíjení kauzálního myšlení, aplikace znalostí na nové situace.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
         </div>
       </div>
@@ -999,11 +1027,13 @@
             <div class="bot-name">Argumentační partner</div>
             <div class="bot-desc">Vede s žákem diskusi z opačné pozice. Odhaluje slabá místa argumentace, upozorňuje na argumentační klamy, nutí žáka obhajovat tvrzení důkazy.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> ZSV, debaty, mediální výchovu, filozofii.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">Chybující chatbot</div>
             <div class="bot-desc">Záměrně předkládá nesprávné informace a vyzývá žáka, aby je vyvrátil nebo ověřil. Skvělý trénink kritického myšlení a práce se zdroji.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> mediální výchovu, ověřování faktů, jakýkoli předmět, kde chcete trénovat zdravou skepsi.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
         </div>
       </div>
@@ -1020,11 +1050,13 @@
             <div class="bot-name">Parťák pro brainstorming</div>
             <div class="bot-desc">Pomáhá žákovi rozbíhat myšlení, generovat varianty a úhly pohledu, a pak z nich vybírat. Nehledá správnou odpověď — hledá co nejvíc nápadů.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> projektové dny, slohové práce, návrhy experimentů, kreativní zadání.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
           <div class="bot">
             <div class="bot-name">Chatbot pro plánování</div>
             <div class="bot-desc">Pomáhá žákovi (nebo týmu) rozvrhnout práci na konkrétní kroky — odhadnout čas, určit priority, rozpoznat rizika, rozdělit role.</div>
             <div class="bot-use"><strong>Vhodné na:</strong> skupinové projekty, ročníkové práce, dlouhodobá zadání.</div>
+            <a class="bot-try" href="#registrace">Vyzkoušet →</a>
           </div>
         </div>
       </div>
